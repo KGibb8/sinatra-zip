@@ -1,0 +1,7 @@
+gem 'puma'
+gem 'sinatra'
+gem 'sinatra-contrib'
+gem 'pry-byebug'
+gem 'rake'
+gem 'rubyzip'
+gem 'rspec'

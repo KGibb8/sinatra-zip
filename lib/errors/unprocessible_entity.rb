@@ -1,0 +1,2 @@
+class UnprocessibleEntity < StandardError
+end
