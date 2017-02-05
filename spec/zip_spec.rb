@@ -111,7 +111,7 @@ RSpec.describe Unzip do
     end
 
     it 'should reject non-pdf files' do
-      expect(@upload.rejected_files.count).to eq 3
+      expect(@upload.rejected_files.count).to eq 4
     end
   end
 

@@ -13,13 +13,13 @@ require 'zip'
 
 class Unzip
 
-  attr_reader :file_type, :ext_name, :saved_files, :errors, :tempfile, :discarded_files
+  attr_reader :file_type, :ext_name, :saved_files, :errors, :tempfile, :rejected_files
 
   def initialize(file, export_path="./spec/uploads")
     @file = file
     @tempfile = file[:tempfile]
     @errors = []
-    @discarded_files = []
+    @rejected_files = []
     @saved_files = []
     @export_path = export_path
 
@@ -38,7 +38,7 @@ class Unzip
       filename = entry.name.split("/").last
       content = entry.get_input_stream.read
       file = Entity.new(filename, content, @export_path)
-      file.valid? ? self.saved_files << file : self.discarded_files << file
+      file.valid? ? self.saved_files << file : self.rejected_files << file
     end
   end
 

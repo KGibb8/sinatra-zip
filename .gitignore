@@ -4,9 +4,6 @@
 *.swo
 *.swm
 
-# Ignore spec assets
-spec/assets/
-
 # Ignore uploaded assets
 spec/uploads/
 
