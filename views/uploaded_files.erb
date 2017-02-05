@@ -1,0 +1,4 @@
+<% @files.each do |file| %>
+  <p>Path: <%= file.path %></p>
+  <p>Filetype: <%= File.extname(file.path) %></p>
+<% end %>

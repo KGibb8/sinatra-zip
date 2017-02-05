@@ -15,7 +15,8 @@ set :run, false
 class Application < Sinatra::Base
 
   set :views, 'views'
-  set :public_dir, 'public'
+  set :public_dir, "#{Application.root}/public"
+  set :uploads, "#{Application.public_dir}/uploads"
   set :root, File.dirname(__FILE__)
 
   get('/') do
@@ -26,10 +27,16 @@ class Application < Sinatra::Base
     erb :upload
   end
 
-  post('/upload') do
+  get('/uploaded_files') do
+    @files = Dir["#{Application.uploads}/*"].inject([]) { |arr, file| arr << File.open(file) }
     binding.pry
+    erb :uploaded_files
+  end
+
+  post('/upload') do
     return unless params[:file]
-    @file = Unzip.new(params[:file])
+    Unzip.new(params[:file], Application.uploads)
+    redirect to('/uploaded_files')
   end
 
 end

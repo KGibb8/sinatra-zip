@@ -9,3 +9,6 @@ spec/assets/
 
 # Ignore uploaded assets
 spec/uploads/
+
+# Ignore public uploads
+public/uploads/
