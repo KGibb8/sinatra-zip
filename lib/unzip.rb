@@ -1,14 +1,6 @@
 require './lib/entity'
 require 'zip'
 
-# %%TODO%%
-
-# Use the HEX_SIGNATURE to guarantee encoding type?
-
-# Must reliably work out how to determine these
-# hex = file.unpack("h*")
-# encoding = file.encoding.name
-
 # use 'zip' gems module/class Zip::Errors to strip custom Unzip validators out
 
 class Unzip

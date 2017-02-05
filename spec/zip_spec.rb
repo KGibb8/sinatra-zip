@@ -137,4 +137,35 @@ RSpec.describe Unzip do
     end
   end
 
+  context 'fake pdf files with correct headers/trailers' do
+    let(:fake_pdf_zip) { File.open('./spec/assets/hack.zip') }
+
+    let(:fake_pdf_zip_params) {
+      {
+        file: {
+          filename: "hack.zip",
+          type: "application/zip",
+          name: "file",
+          tempfile: fake_pdf_zip,
+          head: "Content-Disposition: form-data; name=\"file\"; filename=\"hack.zip\"\r\nContent-Type: application/zip\r\n"
+        }
+      }
+    }
+
+    # This test fails because it passes validation but is actually a fake.
+    # We need to work out how to ACTUALLY verify the validity of a pdf file.
+    # Another method mentioned on stackoverflow is checking for /Page 1../Page 2...
+    # But again, checking for string contents is not necessarily reliable as
+    # can easily be faked by someone who knows what they are doing
+
+    # When security is a major issue, we need to find a better method of validating uploaded files
+
+    it 'should reject fake pdfs' do
+      upload = Unzip.new(fake_pdf_zip_params[:file])
+      expect(upload).to_not be_valid
+      expect(upload.saved_files.count).tp eq 0
+    end
+
+  end
+
 end
