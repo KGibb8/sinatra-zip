@@ -1,8 +1,9 @@
 class Entity
 
-  PDF_HEX_SIGNATURE = "25 50 44 46"
-  PDF_ISO_8859_1 = "%PDF"
-  PDF_ASCII_SIGNATURE = "%%EOF"
+  PDF_HEX_SIGNATURE = "25504446"
+  PDF_HEX_TRAILERS = ["0A2525454F46", "0A2525454F460A", "0D0A2525454F460D0A", "0D2525454F460D"]
+  PDF_ISO_8859_1_HEADER = "%PDF"
+  PDF_ASCII_TRAILERS = ["\n%%EOF", "\n%%EOF\n", "\n\n%%EOF\n\n", "\n%%EOF\n"]
 
   attr_reader :errors, :name, :content, :file_type, :extension
 
@@ -13,7 +14,8 @@ class Entity
     @extension = name.split(".").last
     @errors = []
 
-    validate :iso_signature, :ascii_signature, :file_extension
+    validate :hex_header_signature, :hex_trailer_signature, :iso_signature, :ascii_signature, :file_extension
+
     store_file if valid?
   end
 
@@ -41,7 +43,30 @@ class Entity
 
   def iso_signature
     begin
-      raise UnprocessibleEntity, "ISO-8859-1 signature not compatible" unless @content.to_s[0..3] == PDF_ISO_8859_1
+      raise UnprocessibleEntity, "ISO-8859-1 header signature not compatible" unless @content.to_s[0..3] == PDF_ISO_8859_1_HEADER
+    rescue UnprocessibleEntity => e
+      self.errors << { message: e.message }
+    end
+  end
+
+  def hex_header_signature
+    begin
+      header = @content.to_s[0..3]
+      sig = header.scan(/./).map{ |l| l.unpack('h*') }
+      signature = sig.map{ |s| s.first.reverse }.join
+      raise UnprocessibleEntity, "Hex signature not compatible" unless signature == PDF_HEX_SIGNATURE
+    rescue UnprocessibleEntity => e
+      self.errors << { message: e.message }
+    end
+  end
+
+  def hex_trailer_signature
+    begin
+      trailer = @content.to_s[-9..-1]
+      sig = []
+      trailer.each_char{ |c| sig << c }
+      signature = sig.map{ |c| c.unpack('h*') }.map{ |s| s.first.reverse }.join.upcase
+      raise UnprocessibleEntity, "Hex trailer not compatible" unless PDF_HEX_TRAILERS.select{ |t| signature.match(t) }.any?
     rescue UnprocessibleEntity => e
       self.errors << { message: e.message }
     end
@@ -49,7 +74,7 @@ class Entity
 
   def ascii_signature
     begin
-      raise UnprocessibleEntity, "ASCII signature not compatible" unless @content.to_s.chomp[-5..-1] == PDF_ASCII_SIGNATURE
+      raise UnprocessibleEntity, "ASCII signature not compatible" unless PDF_ASCII_TRAILERS.select{ |t| @content.to_s.chomp[-9..-1].match(t) }.any?
     rescue UnprocessibleEntity => e
       self.errors << { message: e.message }
     end
@@ -57,7 +82,7 @@ class Entity
 
   def file_extension
     begin
-      raise UnprocessibleEntity, "Non-whitelist file extension" unless file_whitelist.select{|wl| wl == @extension }.any?
+      raise UnprocessibleEntity, "File extension not whitelisted" unless file_whitelist.select{|wl| wl == @extension }.any?
     rescue UnprocessibleEntity => e
       self.errors << { message: e.message }
     end
