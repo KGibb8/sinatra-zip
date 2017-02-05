@@ -14,10 +14,14 @@ and ".pdf" as the file extension
 # Get Started
 
 Run the tests:
-```rspec```
+```
+rspec
+```
 
 Run the server:
-```rake s```
+```
+rake s
+```
 
 <ul>
   <li>Navigate to <a href="localhost:4567/">localhost:4567</a></li>
