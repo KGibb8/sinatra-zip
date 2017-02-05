@@ -29,7 +29,6 @@ class Application < Sinatra::Base
 
   get('/uploaded_files') do
     @files = Dir["#{Application.uploads}/*"].inject([]) { |arr, file| arr << File.open(file) }
-    binding.pry
     erb :uploaded_files
   end
 
