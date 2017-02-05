@@ -24,7 +24,7 @@ class Entity
   end
 
   def file_whitelist
-    %w(pdf)
+    %w(pdf PDF)
   end
 
   private
