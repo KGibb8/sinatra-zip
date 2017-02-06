@@ -1,6 +1,7 @@
 require 'rubygems'
 require 'sinatra'
 require 'sinatra/reloader'
+require 'sinatra/flash'
 require 'zip'
 require 'erb'
 require 'pry'
@@ -13,11 +14,17 @@ require './lib/unzip'
 set :run, false
 
 class Application < Sinatra::Base
+  register Sinatra::Flash
+  enable :sessions
 
   set :views, 'views'
-  set :public_dir, "#{Application.root}/public"
-  set :uploads, "#{Application.public_dir}/uploads"
+  set :public_dir, "public"
+  set :uploads, "public/uploads"
   set :root, File.dirname(__FILE__)
+
+  configure do
+    set :server, :puma
+  end
 
   get('/') do
     erb :index
@@ -28,14 +35,24 @@ class Application < Sinatra::Base
   end
 
   get('/uploaded_files') do
+    binding.pry
     @files = Dir["#{Application.uploads}/*"].inject([]) { |arr, file| arr << File.open(file) }
     erb :uploaded_files
   end
 
   post('/upload') do
-    return unless params[:file]
-    Unzip.new(params[:file], Application.uploads)
-    redirect to('/uploaded_files')
+    if params[:file]
+      unzip = Unzip.new(params[:file], Application.uploads)
+      if unzip.valid?
+        redirect to('/uploaded_files')
+      else
+        flash[:notice] = "Upload invalid. Please select a valid zip file for upload"
+        redirect to('/upload')
+      end
+    else
+      flash[:notice] = "Please select a file for upload"
+      redirect to('/upload')
+    end
   end
 
 end
