@@ -36,7 +36,6 @@ class Entity
   end
 
   def store_file
-    binding.pry
     file = File.open("#{@path}/#{@name}", "w")
     file.write(@content)
     file.close
