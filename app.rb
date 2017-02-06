@@ -45,7 +45,8 @@ class Application < Sinatra::Base
       if unzip.valid?
         redirect to('/uploaded_files')
       else
-        flash[:notice] = "Upload invalid. Please select a valid zip file for upload"
+        errors = unzip.errors.map{ |h| h[:message] }
+        flash[:notice] = "Upload invalid. Errors: #{errors.join(", ")}. Please select a valid zip file for upload"
         redirect to('/upload')
       end
     else
