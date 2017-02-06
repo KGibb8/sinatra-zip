@@ -1,0 +1,5 @@
+%h1 Successfully uploaded Files
+
+- @files.each do |file|
+  %p= "Path: #{file.path}"
+  %p= "Filetype: #{File.extname(file.path)}"

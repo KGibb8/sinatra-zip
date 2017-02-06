@@ -8,8 +8,7 @@ require 'pry'
 
 Dir["./config/initializers/*.rb"].each { |file| require file }
 Dir["./lib/errors/*.rb"].each {|file| require file }
-
-require './lib/unzip'
+Dir["./lib/*.rb"].each {|file| require file }
 
 set :run, false
 
@@ -27,16 +26,16 @@ class Application < Sinatra::Base
   end
 
   get('/') do
-    erb :index
+    haml :index
   end
 
   get('/upload') do
-    erb :upload
+    haml :upload
   end
 
   get('/uploaded_files') do
     @files = Dir["#{Application.uploads}/*"].inject([]) { |arr, file| arr << File.open(file) }
-    erb :uploaded_files
+    haml :uploaded_files
   end
 
   post('/upload') do
