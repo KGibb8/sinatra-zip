@@ -6,3 +6,8 @@
   <input type="file" name="file">
   <input type="submit" value="Upload!">
 </form>
+
+<%= form_tag('/uploads', method: :post) do
+  input_tag :movie_title
+  submit_tag 'Upload!'
+end %>

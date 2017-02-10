@@ -8,6 +8,7 @@ require 'pry'
 
 Dir["./config/initializers/*.rb"].each { |file| require file }
 Dir["./lib/errors/*.rb"].each {|file| require file }
+Dir["./assets/helpers/*.rb"].each {|file| require file }
 Dir["./lib/*.rb"].each {|file| require file }
 
 set :run, false
@@ -15,6 +16,8 @@ set :run, false
 class Application < Sinatra::Base
   register Sinatra::Flash
   enable :sessions
+
+  include FormHelper
 
   set :views, 'views'
   set :public_dir, "public"
@@ -26,7 +29,7 @@ class Application < Sinatra::Base
   end
 
   get('/') do
-    haml :index
+    erb :index
   end
 
   get('/upload') do
